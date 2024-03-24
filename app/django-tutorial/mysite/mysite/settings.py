@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-t&t*3-3h8u*)288(*70g$vvh024k7s%!(yu(g-h^uts=o2zvjc
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['sports-club-app.onrender.com']
 
 
 # Application definition
