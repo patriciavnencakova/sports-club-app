@@ -4,9 +4,15 @@ from django.db import models
 class Role(models.Model):
     description = models.CharField(max_length=50)
 
+    def __str__(self):
+        return self.description
+
 
 class Team(models.Model):
     name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
 
 
 class EventType(models.Model):
@@ -20,6 +26,9 @@ class Account(models.Model):
     role = models.ForeignKey(Role, on_delete=models.CASCADE)
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return self.email
+
 
 class Member(models.Model):
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
@@ -28,6 +37,9 @@ class Member(models.Model):
     birth = models.DateField()
     email = models.EmailField(unique=True)
     is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.email
 
 
 class Event(models.Model):
