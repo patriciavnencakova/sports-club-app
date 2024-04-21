@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
 
 class Role(models.Model):
@@ -18,10 +19,12 @@ class Team(models.Model):
 class EventType(models.Model):
     description = models.CharField(max_length=50)
 
+    def __str__(self):
+        return self.description
+
 
 class Account(models.Model):
     email = models.EmailField(unique=True)
-    password = models.CharField(max_length=50)
     is_registered = models.BooleanField(default=False)
     role = models.ForeignKey(Role, on_delete=models.CASCADE)
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
@@ -30,15 +33,19 @@ class Account(models.Model):
         return self.email
 
 
-class Member(models.Model):
-    team = models.ForeignKey(Team, on_delete=models.CASCADE)
-    name = models.CharField(max_length=50)
-    surname = models.CharField(max_length=50)
-    birth = models.DateField()
-    email = models.EmailField(unique=True)
-    is_active = models.BooleanField(default=True)
+class Member(AbstractUser):
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, null=True)
+    birth = models.DateField(null=True)
+
+    class Meta:
+        verbose_name = "member"
+        verbose_name_plural = "members"
+        ordering = ["id"]
+
+    # TODO: Add validation birth/team for not staff users
 
     def __str__(self):
+        # TODO: first name last name team
         return self.email
 
 
@@ -48,6 +55,12 @@ class Event(models.Model):
     location = models.CharField(max_length=50)
     date = models.DateField()
 
+    class Meta:
+        ordering = ["id"]
+
+    def __str__(self):
+        return f"{self.team} - {self.type.description} ({self.date})"
+
 
 class MembershipFee(models.Model):
     member = models.ForeignKey(Member, on_delete=models.CASCADE)
@@ -55,7 +68,8 @@ class MembershipFee(models.Model):
     date = models.DateField()
 
 
-class EventMember(models.Model):
+class Vote(models.Model):
     member = models.ForeignKey(Member, on_delete=models.CASCADE)
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     response = models.BooleanField()
+    comment = models.CharField(max_length=100, null=True)
