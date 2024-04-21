@@ -1,3 +1,5 @@
 venv/
 .idea/
 mysite/.env
+frontend/
+frontend/*
