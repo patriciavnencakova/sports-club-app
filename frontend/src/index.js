@@ -15,9 +15,11 @@ import Homepage from "./routes/homepage";
 import {getJwtToken} from "./utils/auth";
 import Event from "./routes/event";
 
+const graphqlUri = process.env.REACT_APP_GRAPHQL_URI || "http://127.0.0.1:8000/graphql";
+
 // Create an HTTP link
 const httpLink = new HttpLink({
-    uri: "http://127.0.0.1:8000/graphql",
+    uri: graphqlUri,
 });
 
 // Middleware to add the JWT token to the headers
