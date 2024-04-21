@@ -31,7 +31,7 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
     @classmethod
     @login_required
     def resolve_events(cls, root, info, **kwargs):
-        id = kwargs.get('id')
+        id = kwargs.get("id")
         print(info.context.user)
         user = info.context.user
         queryset = models.Event.objects.filter(team=user.team)

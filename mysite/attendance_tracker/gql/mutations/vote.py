@@ -16,9 +16,6 @@ class VoteMutation(graphene.Mutation):
     def mutate(root, info, memberId, eventId, response, comment=None):
         # Your logic to create a new Vote object and save it to the database
         vote = Vote.objects.create(
-            member_id=memberId,
-            event_id=eventId,
-            response=response,
-            comment=comment
+            member_id=memberId, event_id=eventId, response=response, comment=comment
         )
         return VoteMutation(vote=vote)
