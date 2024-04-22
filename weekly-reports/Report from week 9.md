@@ -1,0 +1,22 @@
+# Report from week 9  
+  
+-  student: Patrícia Vnenčáková  
+- project: **Sports Club App**  
+- week 8: **15.4.2024 - 21.4.2024**  
+- github tag:  [`https://github.com/patriciavnencakova/sports-club-app/releases/tag/version_week_9+beta_version`](https://github.com/patriciavnencakova/sports-club-app/releases/tag/version_week_9+beta_version)  
+---  
+- Goals for this week:     
+    -  prepare the beta version  
+- Done:     
+    - beta version is prepared (but with less functionality than I had in mind)  
+    - communication FE <-> BE using GraphQL  
+    - authetification (commit number: [`5def383e7e922d5045144977cf8f0e323d64f87e`](https://github.com/patriciavnencakova/sports-club-app/commit/5def383e7e922d5045144977cf8f0e323d64f87e)
+    - some basic screens and functionalities (Homepage, Register, Login, Events, Event) (commit numbers: [`5def383e7e922d5045144977cf8f0e323d64f87e`](https://github.com/patriciavnencakova/sports-club-app/commit/5def383e7e922d5045144977cf8f0e323d64f87e) ,[`6fee7557681336063f75c43a4f0f68ad6558eab8`](https://github.com/patriciavnencakova/sports-club-app/commit/6fee7557681336063f75c43a4f0f68ad6558eab8),[`2549a60e1004f214c982d4b68fe31bbdbde23d51`](https://github.com/patriciavnencakova/sports-club-app/commit/2549a60e1004f214c982d4b68fe31bbdbde23d51),[`2549a60e1004f214c982d4b68fe31bbdbde23d51`](https://github.com/patriciavnencakova/sports-club-app/commit/2549a60e1004f214c982d4b68fe31bbdbde23d51))
+    - deploy on https://sports-club-app.onrender.com/  (commit numbers: [`64bcbe30d1db5c33b26377a14f84a3a082b881dd`](https://github.com/patriciavnencakova/sports-club-app/commit/64bcbe30d1db5c33b26377a14f84a3a082b881dd) ,[`3017f4bc4658646354f7822c2548293bc108ea5a`](https://github.com/patriciavnencakova/sports-club-app/commit/3017f4bc4658646354f7822c2548293bc108ea5a),[`06360ccdfab43b12007aa0cc30a62a2c864061bc`](https://github.com/patriciavnencakova/sports-club-app/commit/06360ccdfab43b12007aa0cc30a62a2c864061bc),[`9f83372ea106ef9255be4af6fb00b0c605faae51`](https://github.com/patriciavnencakova/sports-club-app/commit/9f83372ea106ef9255be4af6fb00b0c605faae51),[`14be5af4c1c2f3bdd441db91b266849e5e8f4d00`](https://github.com/patriciavnencakova/sports-club-app/commit/14be5af4c1c2f3bdd441db91b266849e5e8f4d00)
+    - bug fixes (commit numbers: [`1d2cfe5e739c3b13845af421471e0ccdf29e778e`](https://github.com/patriciavnencakova/sports-club-app/commit/1d2cfe5e739c3b13845af421471e0ccdf29e778e) ,[`b2564a7955fc77724693ffb59c36bbbea1f96ef5`](https://github.com/patriciavnencakova/sports-club-app/commit/b2564a7955fc77724693ffb59c36bbbea1f96ef5),[`76e93ae33fb8ac680c5b1d2db1982fdedb746d24`](https://github.com/patriciavnencakova/sports-club-app/commit/76e93ae33fb8ac680c5b1d2db1982fdedb746d24),[`fe513b25f1c45d06541397108354217f8d99f148`](https://github.com/patriciavnencakova/sports-club-app/commit/fe513b25f1c45d06541397108354217f8d99f148)
+- Differences:  
+    - I wanted to add more functionalities to beta version  
+- Goals for next week:  
+    - add more functionalities and screens  
+- Problems:   
+    - The main problem this week was adapting my project to FE <-> BE communication using GraphQL. It was my first experience, so it was (and still is) complicated for me to understand the mutations and queries, and I still have a lot of problems with writing the code in React (also my first time). But I think it is getting better and I am getting more familiar with the GraphQL and React with every mutation I try to write.
