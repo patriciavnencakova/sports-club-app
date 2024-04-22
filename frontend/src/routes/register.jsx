@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import {gql, useMutation } from "@apollo/client";
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 
 const REGISTRATION = gql`
 mutation RegisterUser(
@@ -56,7 +56,7 @@ export default function Register() {
             );
         },
         onCompleted: () => {
-            navigate('login/');
+            navigate('/login');
         }
     });
 
@@ -202,12 +202,12 @@ export default function Register() {
                             </button>
                             <p className="text-sm font-light text-gray-500 dark:text-gray-400">
                                 Máš už vytvorené konto?{" "}
-                                <a
-                                    href="login/"
+                                <Link
+                                    to="/login"
                                     className="font-medium text-primary-600 hover:underline dark:text-primary-500"
                                 >
                                     Prihlásiš sa sem.
-                                </a>
+                                </Link>
                             </p>
                         </form>
                     </div>
