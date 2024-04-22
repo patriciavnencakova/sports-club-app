@@ -46,7 +46,7 @@ export default function Login() {
             }
             if (data && data.tokenAuth && data.tokenAuth.token) {
                 setJwtToken(data.tokenAuth.token);
-                navigate("/events");
+                navigate("events/");
             }
         } catch (e) {
             // TODO: spravit tu nieco? https://stackoverflow.com/questions/59465864/handling-errors-with-react-apollo-usemutation-hook

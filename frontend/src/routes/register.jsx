@@ -56,7 +56,7 @@ export default function Register() {
             );
         },
         onCompleted: () => {
-            navigate('/login');
+            navigate('login/');
         }
     });
 
@@ -203,7 +203,7 @@ export default function Register() {
                             <p className="text-sm font-light text-gray-500 dark:text-gray-400">
                                 Máš už vytvorené konto?{" "}
                                 <a
-                                    href="\login"
+                                    href="login/"
                                     className="font-medium text-primary-600 hover:underline dark:text-primary-500"
                                 >
                                     Prihlásiš sa sem.
