@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import {useQuery, gql, useMutation} from "@apollo/client";
 import { useParams } from "react-router-dom";
+import {comment} from "postcss";
 
 const EVENT_BY_ID = gql`
   query eventById($id: Int!) {
@@ -20,8 +21,8 @@ const EVENT_BY_ID = gql`
 `;
 
 const CREATE_VOTE = gql`
-  mutation vote($memberId: ID!, $eventId: ID!, $response: Boolean!, $comment: String) {
-    vote(memberId: $memberId, eventId: $eventId, response: $response, comment: $comment) {
+  mutation vote($eventId: ID!, $response: Boolean!, $comment: String) {
+    vote(eventId: $eventId, response: $response, comment: $comment) {
       vote {
         id
         member {
@@ -38,13 +39,13 @@ const CREATE_VOTE = gql`
 `;
 
 export default function Event() {
-    // const [loginUser] = useMutation(EVENT_BY_ID);
-    const [attendance, setAttendance] = useState('1');
-    const [reason, setReason] = useState(true);
+    const [createVote] = useMutation(CREATE_VOTE);
+    const [attendance, setAttendance] = useState(true);
+    const [comment, setComment] = useState("");
+    const { id: eventId } = useParams();
 
-    const { id } = useParams();
     const { data, loading, error } = useQuery(EVENT_BY_ID, {
-        variables: { id: parseInt(id) } // Convert id to integer if needed
+        variables: { id: parseInt(eventId) } // Convert id to integer if needed
     });
 
     if (loading) return "Loading...";
@@ -53,24 +54,47 @@ export default function Event() {
     const event = data.events[0]; // Assuming there's only one event returned
 
     const handleAttendanceChange = (e) => {
-        setAttendance(e.target.value);
+        const value = e.target.value === '1'; // Convert '1' to true, '0' to false
+        setAttendance(value);
     };
 
-    const handleSubmit = (event) => {
-        event.preventDefault(); // Prevent the default form submission behavior
+    const handleCommentChange = (e) => {
+        setComment(e.target.value);
+    };
 
-        // Prepare the form data to be submitted
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        // const formData = new FormData(e.target);
+
         const formData = {
-            attendance: attendance === '1',
-            reason: reason
+            attendance: attendance,
+            comment: comment
+        };
+        console.log(comment);
+        console.log(attendance);
+
+        const variables = {
+            // memberId: 1, // Replace with the actual member ID
+            eventId: eventId,
+            response: attendance,
+            comment: comment
         };
 
+        try {
+            const {data} = await createVote({variables});
+
+            console.log('Vote created:', data);
+        } catch (err) {
+            // Handle error, if needed
+            console.error('Error creating vote:', err);
+        }
+
         // Perform further actions with the form data, such as sending it to the server
-        console.log('Form data:', formData);
+        console.log('Form data:', variables);
 
         // Clear the form fields
-        setAttendance('1');
-        setReason('');
+        setAttendance(true);
+        setComment("");
     };
 
     return (
@@ -101,7 +125,7 @@ export default function Event() {
                         type="radio"
                         name="attendance"
                         value="1"
-                        checked={attendance === '1'}
+                        checked={attendance === true}
                         onChange={handleAttendanceChange}
                         className="w-4 h-4 text-red-600 bg-gray-100 border-gray-300 rounded focus:ring-red-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                     />
@@ -118,7 +142,7 @@ export default function Event() {
                         type="radio"
                         name="attendance"
                         value="0"
-                        checked={attendance === '0'}
+                        checked={attendance === false}
                         onChange={handleAttendanceChange}
                         className="w-4 h-4 text-red-600 bg-gray-100 border-gray-300 rounded focus:ring-red-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                     />
@@ -131,7 +155,7 @@ export default function Event() {
                 </div>
 
                 {/* Reason for absence */}
-                {attendance === '0' && (
+                {attendance === false && (
                     <div className="mb-8">
                         <div className="max-w-sm mx-auto">
                             <div className="mb-5">
@@ -143,8 +167,11 @@ export default function Event() {
                                 </label>
                                 <input
                                     type="text"
-                                    id="large-input"
+                                    id="comment"
+                                    name="comment"
                                     className="block w-full p-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-base focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                    onChange={handleCommentChange}
+                                    required
                                 />
                             </div>
                         </div>

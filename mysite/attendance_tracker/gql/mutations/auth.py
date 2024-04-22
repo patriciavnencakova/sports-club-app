@@ -1,44 +1,42 @@
 import graphene
 from django.core.exceptions import ObjectDoesNotExist
 from graphql import GraphQLError
+from graphql_auth import mutations
 
 from ..types import MemberType
 from ...models import Account, Member
 
 
-class RegistrationMutation(graphene.Mutation):
+class RegistrationMutation(mutations.Register):
     class Arguments:
         first_name = graphene.String()
         last_name = graphene.String()
         birth_date = graphene.Date()
         email = graphene.String()
-        password = graphene.String()
-        confirm_password = graphene.String()
 
     member = graphene.Field(MemberType, required=True)
 
     def mutate(
-        root, info, first_name, last_name, birth_date, email, password, confirm_password
+        root, info, **input
     ):
-        if password != confirm_password:
-            raise GraphQLError("Heslá sa nezhodujú.")
-
+        # TODO: Call the super()
         try:
-            account = Account.objects.get(email=email)
+            account = Account.objects.get(email=input['email'])
             if account.is_registered:
-                raise GraphQLError(f"Účet s emailom {email} je už registrovaný.")
+                raise GraphQLError(f"Účet s emailom {input['email']} je už registrovaný.")
         except ObjectDoesNotExist:
             raise GraphQLError("Nemáš právo sa registrovať.")
 
         member = Member.objects.create(
             team=account.team,
-            first_name=first_name,
-            last_name=last_name,
-            birth=birth_date,
-            email=email,
-            # password=password
+            first_name=input['first_name'],
+            last_name=input['last_name'],
+            username=input['username'],
+            birth=input['birth_date'],
+            email=input['email'],
         )
-        account.password = password
+        member.set_password(input['password1'])
+        member.save()
         account.is_registered = True
         account.save()
         return RegistrationMutation(member=member)

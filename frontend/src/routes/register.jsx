@@ -6,24 +6,26 @@ const REGISTRATION = gql`
 mutation RegisterUser(
   $firstName: String!
   $lastName: String!
+  $username: String!
   $email: String!
   $birthDate: Date!
-  $password: String!
-  $confirmPassword: String!
+  $password1: String!
+  $password2: String!
 ) {
   registration(
     firstName: $firstName
     lastName: $lastName
     email: $email
     birthDate: $birthDate
-    password: $password
-    confirmPassword: $confirmPassword
+    password1: $password1
+    password2: $password2
+    username:$username
   ) {
-    vote {
+    member {
       id
       birth
-      name
-      surname
+      firstName
+      lastName
       __typename
     }
     __typename
@@ -77,8 +79,9 @@ export default function Register() {
                     lastName: lastName,
                     birthDate: birthDate,
                     email: email,
-                    password: password,
-                    confirmPassword: confirmPassword,
+                    password1: password,
+                    password2: confirmPassword,
+                    username: email
                 },
             });
         } catch (e) {
@@ -200,10 +203,10 @@ export default function Register() {
                             <p className="text-sm font-light text-gray-500 dark:text-gray-400">
                                 Máš už vytvorené konto?{" "}
                                 <a
-                                    href="login/"
+                                    href="\login"
                                     className="font-medium text-primary-600 hover:underline dark:text-primary-500"
                                 >
-                                    Prihlás sa sem.
+                                    Prihlásiš sa sem.
                                 </a>
                             </p>
                         </form>
