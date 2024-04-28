@@ -77,7 +77,7 @@ export default function Login() {
                         htmlFor="username"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                     >
-                        Username
+                        E-mail
                     </label>
                     <input
                         type="text"

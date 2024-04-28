@@ -22,6 +22,8 @@ class RegistrationMutation(mutations.Register):
         # TODO: Call the super()
         try:
             account = Account.objects.get(email=input['email'])
+            if input['password1'] != input['password2']:
+                raise GraphQLError(f"Heslá sa nezhodujú.")
             if account.is_registered:
                 raise GraphQLError(f"Účet s emailom {input['email']} je už registrovaný.")
         except ObjectDoesNotExist:
