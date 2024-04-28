@@ -1,0 +1,22 @@
+# Report from week 10
+  
+-  student: Patrícia Vnenčáková  
+- project: **Sports Club App**  
+- week 10: **22.4.2024 - 28.4.2024**  
+- github tag:  [`https://github.com/patriciavnencakova/sports-club-app/releases/tag/version_week_10`](https://github.com/patriciavnencakova/sports-club-app/releases/tag/version_week_10)  
+---  
+- Goals for this week:     
+    - make plans for the final weeks
+    - prepare the design of the website
+- Done:     
+    - make plans for the final weeks
+    - prepare the design of the website
+    - add one more registration check - given password should be the same (commit number [`75117e53c6ac61ca341d8556ab208177d7ce000f`](https://github.com/patriciavnencakova/sports-club-app/commit/75117e53c6ac61ca341d8556ab208177d7ce000f))
+- Differences: 
+    - none
+- Goals for next week:  
+    - add functionalities for coach 
+    - add logout functionality 
+    - work work work 
+- Problems:   
+    - A bit of a struggle to plan for the last few weeks as there is still a lot of work to be done.
