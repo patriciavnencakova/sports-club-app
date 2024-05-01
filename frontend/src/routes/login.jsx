@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {gql, useMutation} from "@apollo/client";
-import {setJwtToken} from "../utils/auth";
+import {setJwtToken, setRefreshToken} from "../utils/auth";
 import { useNavigate } from "react-router-dom"; // Import useHistory hook
 
 
@@ -10,7 +10,7 @@ mutation LoginUser($username: String!, $password: String!) {
     success
     errors
     token
-    unarchiving
+    refreshToken
     user {
       id
       username
@@ -44,8 +44,10 @@ export default function Login() {
             } else {
                 setError(null);
             }
-            if (data && data.tokenAuth && data.tokenAuth.token) {
+            if (data && data.tokenAuth) {
                 setJwtToken(data.tokenAuth.token);
+                console.log('tokenAuth', data.tokenAuth);
+                setRefreshToken(data.tokenAuth.refreshToken);
                 navigate("/events");
             }
         } catch (e) {

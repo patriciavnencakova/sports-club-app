@@ -90,9 +90,6 @@ export default function Event() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        console.log(comment);
-        console.log(attendance);
-
         const variables = {
             eventId: eventId,
             response: attendance,

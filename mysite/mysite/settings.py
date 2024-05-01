@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 import os
+from datetime import timedelta
 from pathlib import Path
 
 import dj_database_url
@@ -51,6 +52,7 @@ INSTALLED_APPS = [
     "graphene_django",
     "corsheaders",
     "graphql_auth",
+    'graphql_jwt.refresh_token.apps.RefreshTokenConfig'
 ]
 
 MIDDLEWARE = [
@@ -165,7 +167,6 @@ CORS_ORIGIN_ALLOW_ALL = True
 AUTH_USER_MODEL = "attendance_tracker.Member"
 
 AUTHENTICATION_BACKENDS = [
-    # 'graphql_jwt.backends.JSONWebTokenBackend',
     "django.contrib.auth.backends.ModelBackend",
     # TODO: ???
     "graphql_auth.backends.GraphQLAuthBackend",
