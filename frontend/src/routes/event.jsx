@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from "react";
 import {useQuery, gql, useMutation} from "@apollo/client";
-import { useParams } from "react-router-dom";
-import EventForm from "./components/vote_component";
+import {useNavigate, useParams} from "react-router-dom";
+import EventForm from "../components/eventForm";
+import NavBar from "../components/navBar";
 
 const EVENT_BY_ID = gql`
   query eventById($id: Int!) {
@@ -60,8 +61,6 @@ const CREATE_VOTE = gql`
 
 export default function Event() {
     const [createVote] = useMutation(CREATE_VOTE);
-    const [attendance, setAttendance] = useState(true);
-    const [comment, setComment] = useState("");
     const { id: eventId } = useParams();
 
     const { data: eventData, loading: eventLoading, error: eventError } = useQuery(EVENT_BY_ID, {
@@ -78,41 +77,10 @@ export default function Event() {
     const event = eventData.events[0];
     const vote = voteData.vote && voteData.vote.length > 0 ? voteData.vote[0] : null;
 
-    const handleAttendanceChange = (e) => {
-        const value = e.target.value === '1';
-        setAttendance(value);
-    };
-
-    const handleCommentChange = (e) => {
-        setComment(e.target.value);
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        const variables = {
-            eventId: eventId,
-            response: attendance,
-            comment: comment
-        };
-
-        try {
-            const {data} = await createVote({variables});
-            console.log('Vote created:', data);
-            setAttendance(true);
-            setComment("");
-
-            await voteRefetch();
-        } catch (err) {
-            console.error('Error creating vote:', err);
-        }
-
-        console.log('Form data:', variables);
-    };
-
     return (
         <div>
             <div className="mb-8">
+                <NavBar />
                 <a
                     href="#"
                     className="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 max-w-sm mx-auto"
@@ -129,17 +97,16 @@ export default function Event() {
                 </a>
             </div>
             {vote ? (
-                <div>
+                <div className="max-w-sm mx-auto">
                     <h2>Vote Information:</h2>
                     <p>Response: {vote.response ? 'Yes' : 'No'}</p>
                     {vote.comment && <p>Comment: {vote.comment}</p>}
                 </div>
             ) : (
                 <EventForm
-                    attendance={attendance}
-                    handleAttendanceChange={handleAttendanceChange}
-                    handleCommentChange={handleCommentChange}
-                    handleSubmit={handleSubmit}
+                    eventId={eventId}
+                    createVote={createVote}
+                    voteRefetch={voteRefetch}
                 />
             )}
         </div>
