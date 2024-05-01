@@ -1,7 +1,7 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {useQuery, gql, useMutation} from "@apollo/client";
 import { useParams } from "react-router-dom";
-import {comment} from "postcss";
+import EventForm from "./components/vote_component";
 
 const EVENT_BY_ID = gql`
   query eventById($id: Int!) {
@@ -19,6 +19,26 @@ const EVENT_BY_ID = gql`
     }
   }
 `;
+
+const VOTE_BY_EVENT_ID = gql`
+query voteByEventId($id: Int!){
+  vote(id: $id) {
+    member {
+      firstName
+      lastName
+    }
+    event{
+      date
+      type{
+        description
+      }
+      location
+    }
+    response
+    comment
+  }
+}
+`
 
 const CREATE_VOTE = gql`
   mutation vote($eventId: ID!, $response: Boolean!, $comment: String) {
@@ -44,17 +64,22 @@ export default function Event() {
     const [comment, setComment] = useState("");
     const { id: eventId } = useParams();
 
-    const { data, loading, error } = useQuery(EVENT_BY_ID, {
-        variables: { id: parseInt(eventId) } // Convert id to integer if needed
+    const { data: eventData, loading: eventLoading, error: eventError } = useQuery(EVENT_BY_ID, {
+        variables: { id: parseInt(eventId) }
     });
 
-    if (loading) return "Loading...";
-    if (error) return <pre>{error.message}</pre>;
+    const { data: voteData, loading: voteLoading, error: voteError, refetch: voteRefetch } = useQuery(VOTE_BY_EVENT_ID, {
+        variables: { id: parseInt(eventId) }
+    });
 
-    const event = data.events[0]; // Assuming there's only one event returned
+    if (eventLoading || voteLoading) return "Loading...";
+    if (eventError || voteError) return <pre>{eventError.message || voteError.message}</pre>;
+
+    const event = eventData.events[0];
+    const vote = voteData.vote && voteData.vote.length > 0 ? voteData.vote[0] : null;
 
     const handleAttendanceChange = (e) => {
-        const value = e.target.value === '1'; // Convert '1' to true, '0' to false
+        const value = e.target.value === '1';
         setAttendance(value);
     };
 
@@ -64,17 +89,11 @@ export default function Event() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        // const formData = new FormData(e.target);
 
-        const formData = {
-            attendance: attendance,
-            comment: comment
-        };
         console.log(comment);
         console.log(attendance);
 
         const variables = {
-            // memberId: 1, // Replace with the actual member ID
             eventId: eventId,
             response: attendance,
             comment: comment
@@ -82,25 +101,20 @@ export default function Event() {
 
         try {
             const {data} = await createVote({variables});
-
             console.log('Vote created:', data);
+            setAttendance(true);
+            setComment("");
+
+            await voteRefetch();
         } catch (err) {
-            // Handle error, if needed
             console.error('Error creating vote:', err);
         }
 
-        // Perform further actions with the form data, such as sending it to the server
         console.log('Form data:', variables);
-
-        // Clear the form fields
-        setAttendance(true);
-        setComment("");
     };
 
     return (
         <div>
-        <form onSubmit={handleSubmit}>
-            {/* Event details */}
             <div className="mb-8">
                 <a
                     href="#"
@@ -117,78 +131,20 @@ export default function Event() {
                     </p>
                 </a>
             </div>
-            <div className="mb-8">
-                {/* Attendance options */}
-                <div className="flex items-center mb-4 max-w-sm mx-auto">
-                    <input
-                        id="pridem-radio"
-                        type="radio"
-                        name="attendance"
-                        value="1"
-                        checked={attendance === true}
-                        onChange={handleAttendanceChange}
-                        className="w-4 h-4 text-red-600 bg-gray-100 border-gray-300 rounded focus:ring-red-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                    />
-                    <label
-                        htmlFor="pridem-radio"
-                        className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                    >
-                        Prídem
-                    </label>
+            {vote ? (
+                <div>
+                    <h2>Vote Information:</h2>
+                    <p>Response: {vote.response ? 'Yes' : 'No'}</p>
+                    {vote.comment && <p>Comment: {vote.comment}</p>}
                 </div>
-                <div className="flex items-center mb-4 max-w-sm mx-auto">
-                    <input
-                        id="nepridem-radio"
-                        type="radio"
-                        name="attendance"
-                        value="0"
-                        checked={attendance === false}
-                        onChange={handleAttendanceChange}
-                        className="w-4 h-4 text-red-600 bg-gray-100 border-gray-300 rounded focus:ring-red-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                    />
-                    <label
-                        htmlFor="nepridem-radio"
-                        className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                    >
-                        Neprídem
-                    </label>
-                </div>
-
-                {/* Reason for absence */}
-                {attendance === false && (
-                    <div className="mb-8">
-                        <div className="max-w-sm mx-auto">
-                            <div className="mb-5">
-                                <label
-                                    htmlFor="large-input"
-                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                >
-                                    Dôvod neprítomnosti:
-                                </label>
-                                <input
-                                    type="text"
-                                    id="comment"
-                                    name="comment"
-                                    className="block w-full p-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-base focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                    onChange={handleCommentChange}
-                                    required
-                                />
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {/* Submit button */}
-                <div className="max-w-sm mx-auto">
-                    <button
-                        type="submit"
-                        className="w-full py-3 text-white bg-red-500 rounded-md focus:outline-none hover:bg-red-600"
-                    >
-                        Poslať
-                    </button>
-                </div>
-            </div>
-        </form>
+            ) : (
+                <EventForm
+                    attendance={attendance}
+                    handleAttendanceChange={handleAttendanceChange}
+                    handleCommentChange={handleCommentChange}
+                    handleSubmit={handleSubmit}
+                />
+            )}
         </div>
     );
 }
