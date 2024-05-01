@@ -73,3 +73,6 @@ class Vote(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     response = models.BooleanField()
     comment = models.CharField(max_length=100, null=True)
+
+    def __str__(self):
+        return f"{self.member.first_name} {self.member.last_name} - {self.event.type.description} ({self.event.date})"

@@ -8,7 +8,7 @@ from graphql_auth.decorators import login_required
 from .mutations.vote import VoteMutation
 from .. import models
 from .mutations.auth import RegistrationMutation
-from .types import MemberType, EventType
+from .types import MemberType, EventType, VoteType
 
 
 class AuthMutation(graphene.ObjectType):
@@ -24,6 +24,7 @@ class AuthMutation(graphene.ObjectType):
 class Query(UserQuery, MeQuery, graphene.ObjectType):
     # members = graphene.List(MemberType)
     events = graphene.List(EventType, id=graphene.Int())
+    vote = graphene.List(VoteType, id=graphene.Int())
 
     # def resolve_members(root, info):
     #     return models.Member.objects.all()
@@ -38,6 +39,19 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
 
         if id is not None:
             queryset = queryset.filter(id=id)
+
+        return queryset
+
+    @classmethod
+    @login_required
+    def resolve_vote(cls, root, info, **kwargs):
+        id = kwargs.get("id")
+        print(info.context.user)
+        user = info.context.user
+        queryset = models.Vote.objects.filter(member=user)
+
+        if id is not None:
+            queryset = queryset.filter(event_id=id)
 
         return queryset
 
