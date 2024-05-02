@@ -3,6 +3,7 @@ import {useQuery, gql, useMutation} from "@apollo/client";
 import {useNavigate, useParams} from "react-router-dom";
 import EventForm from "../components/eventForm";
 import NavBar from "../components/navBar";
+import EventDetail from "../components/eventDetail";
 
 const EVENT_BY_ID = gql`
   query eventById($id: Int!) {
@@ -81,20 +82,9 @@ export default function Event() {
         <div>
             <div className="mb-8">
                 <NavBar />
-                <a
-                    href="#"
-                    className="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 max-w-sm mx-auto"
-                >
-                    <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                        {event.type.description}
-                    </h5>
-                    <p className="font-normal text-gray-700 dark:text-gray-400">
-                        Kedy? <b>{event.date}</b>
-                    </p>
-                    <p className="font-normal text-gray-700 dark:text-gray-400">
-                        Kde? <b>{event.location}</b>
-                    </p>
-                </a>
+                <EventDetail
+                    event={event}
+                />
             </div>
             {vote ? (
                 <div className="max-w-sm mx-auto">

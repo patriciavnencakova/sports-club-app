@@ -2,6 +2,7 @@ import React from "react";
 import { useQuery, gql } from "@apollo/client";
 import {Link} from "react-router-dom";
 import NavBar from "../components/navBar";
+import EventDetail from "../components/eventDetail";
 
 const EVENTS_QUERY = gql`
 {
@@ -29,17 +30,17 @@ export default function Events() {
     return (
         <div className>
             <NavBar />
-
             <h2 className="mb-2 text-lg font-semibold text-gray-900 dark:text-white max-w-sm mx-auto">Zoznam tréningov a zápasov tvojho tímu:</h2>
-            <ul className="max-w-md space-y-1 text-gray-500 list-disc list-inside dark:text-gray-400 max-w-sm mx-auto">
-                {data.events.map((event) => (
-                    <li key={event.id}>
-                        <Link to={`/events/${event.id}`}>
-                            {`${event.team.name} - ${event.type.description} (${event.date})`}
-                        </Link>
-                    </li>
-                ))}
-            </ul>
+            {data.events.map((event) => (
+                <div key={event.id}>
+                    <Link to={`/events/${event.id}`}>
+                        <EventDetail
+                            event={event}
+                        />
+                    </Link>
+                    <br/>
+                </div>
+            ))}
         </div>
     );
 }

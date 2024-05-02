@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {gql, useMutation} from "@apollo/client";
-import {setJwtToken, setRefreshToken} from "../utils/auth";
+import {getJwtToken, setJwtToken, setRefreshToken} from "../utils/auth";
 import { useNavigate } from "react-router-dom"; // Import useHistory hook
 
 
@@ -19,10 +19,46 @@ mutation LoginUser($username: String!, $password: String!) {
 }
 `;
 
+const VERIFY_TOKEN = gql`
+mutation verifyToken($token: String) {
+  verifyToken(token: $token) {
+    errors
+    payload
+    success
+  }
+}
+`
+
 export default function Login() {
     const [loginUser] = useMutation(LOGIN);
+    const [verifyToken] = useMutation(VERIFY_TOKEN);
     const [error, setError] = useState(null);
-    const navigate = useNavigate(); // Initialize useHistory hook
+    const navigate = useNavigate();
+
+    // TODO: Make it so the form doesn't appear at all.
+    useEffect(() => {
+        async function verifyTokenAndRedirect() {
+            try {
+                const { data: verifyData } = await verifyToken({
+                    variables: {
+                        token: getJwtToken(),
+                    },
+                });
+
+                console.log(verifyData, verifyData.verifyToken, verifyData.verifyToken.success, verifyData.verifyToken.success === true);
+
+                if (verifyData && verifyData.verifyToken && verifyData.verifyToken.success === true) {
+                    console.log('seks');
+                    navigate('/events'); // Redirect to '/events' if token verification succeeds
+                }
+            } catch (error) {
+                console.error("Error verifying token:", error);
+                // Handle error if needed
+            }
+        }
+
+        verifyTokenAndRedirect();
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
