@@ -17,6 +17,21 @@ const EVENTS_QUERY = gql`
     team {
       name
     }
+    coming {
+        id
+        firstName
+        lastName
+      }
+      notComing {
+        id
+        firstName
+        lastName
+      }
+      notResponded {
+        id
+        firstName
+        lastName
+      }
   }
 }
 `;
@@ -36,6 +51,7 @@ export default function Events() {
                     <Link to={`/events/${event.id}`}>
                         <EventDetail
                             event={event}
+                            showMembers={false}
                         />
                     </Link>
                     <br/>

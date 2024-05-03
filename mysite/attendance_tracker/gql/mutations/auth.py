@@ -16,28 +16,28 @@ class RegistrationMutation(mutations.Register):
 
     member = graphene.Field(MemberType, required=True)
 
-    def mutate(
-        root, info, **input
-    ):
+    def mutate(root, info, **input):
         # TODO: Call the super()
         try:
-            account = Account.objects.get(email=input['email'])
-            if input['password1'] != input['password2']:
+            account = Account.objects.get(email=input["email"])
+            if input["password1"] != input["password2"]:
                 raise GraphQLError(f"Heslá sa nezhodujú.")
             if account.is_registered:
-                raise GraphQLError(f"Účet s emailom {input['email']} je už registrovaný.")
+                raise GraphQLError(
+                    f"Účet s emailom {input['email']} je už registrovaný."
+                )
         except ObjectDoesNotExist:
             raise GraphQLError("Nemáš právo sa registrovať.")
 
         member = Member.objects.create(
             team=account.team,
-            first_name=input['first_name'],
-            last_name=input['last_name'],
-            username=input['username'],
-            birth=input['birth_date'],
-            email=input['email'],
+            first_name=input["first_name"],
+            last_name=input["last_name"],
+            username=input["username"],
+            birth=input["birth_date"],
+            email=input["email"],
         )
-        member.set_password(input['password1'])
+        member.set_password(input["password1"])
         member.save()
         account.is_registered = True
         account.save()

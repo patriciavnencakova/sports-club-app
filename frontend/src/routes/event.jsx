@@ -18,6 +18,21 @@ const EVENT_BY_ID = gql`
         id
         name
       }
+      coming {
+        id
+        firstName
+        lastName
+      }
+      notComing {
+        id
+        firstName
+        lastName
+      }
+      notResponded {
+        id
+        firstName
+        lastName
+      }
     }
   }
 `;
@@ -84,6 +99,7 @@ export default function Event() {
                 <NavBar />
                 <EventDetail
                     event={event}
+                    showMembers={true}
                 />
             </div>
             {vote ? (

@@ -14,6 +14,9 @@ class VoteMutation(graphene.Mutation):
     @staticmethod
     def mutate(root, info, event_id, response, comment=None):
         vote = Vote.objects.create(
-            member_id=info.context.user.id, event_id=event_id, response=response, comment=comment
+            member_id=info.context.user.id,
+            event_id=event_id,
+            response=response,
+            comment=comment,
         )
         return VoteMutation(vote=vote)
