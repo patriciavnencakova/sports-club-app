@@ -45,7 +45,7 @@ export default function Events() {
     return (
         <div className>
             <NavBar />
-            <h2 className="mb-2 text-lg font-semibold text-gray-900 dark:text-white max-w-sm mx-auto">Zoznam tréningov a zápasov tvojho tímu:</h2>
+            <h2 className="mb-2 text-lg font-semibold text-gray-900 dark:text-white max-w-sm mx-auto">Zoznam udalostí tvojho tímu:</h2>
             {data.events.map((event) => (
                 <div key={event.id}>
                     <Link to={`/events/${event.id}`}>

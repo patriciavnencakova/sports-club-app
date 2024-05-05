@@ -38,8 +38,8 @@ const EVENT_BY_ID = gql`
 `;
 
 const VOTE_BY_EVENT_ID = gql`
-query voteByEventId($id: Int!){
-  vote(id: $id) {
+query voteByEventId($eventId: Int!){
+  vote(eventId: $eventId) {
     member {
       firstName
       lastName
@@ -78,43 +78,60 @@ const CREATE_VOTE = gql`
 export default function Event() {
     const [createVote] = useMutation(CREATE_VOTE);
     const { id: eventId } = useParams();
+    const [showForm, setShowForm] = useState(false);
+    // const [event, setEvent] = useState(null);
 
-    const { data: eventData, loading: eventLoading, error: eventError } = useQuery(EVENT_BY_ID, {
+    const { data: eventData, loading: eventLoading, error: eventError, refetch: eventRefetch } = useQuery(EVENT_BY_ID, {
         variables: { id: parseInt(eventId) }
     });
 
     const { data: voteData, loading: voteLoading, error: voteError, refetch: voteRefetch } = useQuery(VOTE_BY_EVENT_ID, {
-        variables: { id: parseInt(eventId) }
+        variables: { eventId: parseInt(eventId) }
     });
 
     if (eventLoading || voteLoading) return "Loading...";
     if (eventError || voteError) return <pre>{eventError.message || voteError.message}</pre>;
 
-    const event = eventData.events[0];
-    const vote = voteData.vote && voteData.vote.length > 0 ? voteData.vote[0] : null;
+    const event = eventData.events && eventData.events.length > 0 ? eventData.events[0] : null;
+    const vote = voteData.vote ? voteData.vote : null;
+
+    const toggleForm = () => {
+        setShowForm(!showForm);
+    };
 
     return (
         <div>
             <div className="mb-8">
-                <NavBar />
+                <NavBar/>
                 <EventDetail
                     event={event}
                     showMembers={true}
                 />
             </div>
-            {vote ? (
-                <div className="max-w-sm mx-auto">
-                    <h2>Vote Information:</h2>
-                    <p>Response: {vote.response ? 'Yes' : 'No'}</p>
-                    {vote.comment && <p>Comment: {vote.comment}</p>}
-                </div>
-            ) : (
+            {!vote || showForm ? (
                 <EventForm
                     eventId={eventId}
                     createVote={createVote}
                     voteRefetch={voteRefetch}
+                    eventRefetch={eventRefetch}
+                    setShowForm={setShowForm}
                 />
-            )}
+            ) : (
+                <div className="max-w-sm mx-auto">
+                    <p style={{fontSize: 20}}>Tvoja odpoveď: <strong>{vote.response ? 'prídem' : 'neprídem'}</strong>
+                    </p>
+                    {vote.comment && <p style={{fontSize: 18}}>Dôvod: <strong>{vote.comment}</strong></p>}
+                    <br/>
+                    <button
+                        type="button"
+                        onClick={toggleForm}
+                        className="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-red-600 dark:hover:bg-blue-red dark:focus:ring-red-800"
+                    >
+                        Zmeniť odpoveď
+                    </button>
+                </div>
+                )
+            }
         </div>
     );
 }

@@ -25,7 +25,7 @@ class AuthMutation(graphene.ObjectType):
 class Query(UserQuery, MeQuery, graphene.ObjectType):
     # members = graphene.List(MemberType)
     events = graphene.List(EventType, id=graphene.Int())
-    vote = graphene.List(VoteType, id=graphene.NonNull(graphene.Int))
+    vote = graphene.Field(VoteType, event_id=graphene.NonNull(graphene.Int))
     # event_votes = graphene.Field(EventVotesType, id=graphene.NonNull(graphene.Int))
 
     # def resolve_members(root, info):
@@ -49,14 +49,9 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
     @classmethod
     @login_required
     def resolve_vote(cls, root, info, **kwargs):
-        id = kwargs.get("id")
+        event_id = kwargs.get("event_id")
         user = info.context.user
-        queryset = models.Vote.objects.filter(member=user)
-
-        if id is not None:
-            queryset = queryset.filter(event_id=id)
-
-        return queryset
+        return models.Vote.objects.filter(member=user, event_id=event_id).last()
 
     # @classmethod
     # @login_required

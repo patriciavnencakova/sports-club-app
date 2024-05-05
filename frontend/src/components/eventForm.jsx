@@ -2,7 +2,7 @@
 
 import React, {useState} from "react";
 
-export default function EventForm({eventId, createVote, voteRefetch}) {
+export default function EventForm({eventId, createVote, voteRefetch, eventRefetch, setShowForm}) {
     const [attendance, setAttendance] = useState(true);
     const [comment, setComment] = useState("");
 
@@ -31,6 +31,8 @@ export default function EventForm({eventId, createVote, voteRefetch}) {
             setComment("");
 
             await voteRefetch();
+            await eventRefetch();
+            setShowForm(false);
         } catch (err) {
             console.error('Error creating vote:', err);
         }
