@@ -1,5 +1,6 @@
 import graphene
 from graphql import GraphQLError
+from graphql_auth.decorators import login_required
 
 from ..types import VoteType, EventtType
 from ...models import Vote, Account, Event, EventType
@@ -7,15 +8,21 @@ from ...models import Vote, Account, Event, EventType
 
 class EditEventMutation(graphene.Mutation):
     class Arguments:
-        event_id = graphene.ID(required=True)
+        event_id = graphene.ID()
         type = graphene.String(required=True)
         date = graphene.Date(required=True)
         location = graphene.String(required=True)
 
     event = graphene.Field(EventtType, required=True)
 
-    @staticmethod
-    def mutate(root, info, event_id, type, date, location):
+    @classmethod
+    @login_required
+    def mutate(cls, root, info, **kwargs):
+        event_id = kwargs.get('event_id')
+        type = kwargs.get('type')
+        date = kwargs.get('date')
+        location = kwargs.get('location')
+
         user = info.context.user
         role = Account.objects.get(email=user.email).role
         if role.description == 'hráč':

@@ -29,18 +29,18 @@ export default function EventDetail({event, showMembers}) {
                         ))}
                     </div>
                     <div style={{flex: '1', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-                        <img src="/question.png" alt="Question" style={{width: '20px', height: 'auto'}}/>
-                        <p>{event.notResponded.length}</p>
-                        {showMembers && event.notResponded.map((member) => (
+                        <img src="/false.png" alt="X" style={{width: '20px', height: 'auto'}}/>
+                        <p>{event.notComing.length}</p>
+                        {showMembers && event.notComing.map((member) => (
                             <div key={member.id}>
                                 <p>{member.firstName} {member.lastName}</p>
                             </div>
                         ))}
                     </div>
                     <div style={{flex: '1', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-                        <img src="/false.png" alt="X" style={{width: '20px', height: 'auto'}}/>
-                        <p>{event.notComing.length}</p>
-                        {showMembers && event.notComing.map((member) => (
+                        <img src="/question.png" alt="Question" style={{width: '20px', height: 'auto'}}/>
+                        <p>{event.notResponded.length}</p>
+                        {showMembers && event.notResponded.map((member) => (
                             <div key={member.id}>
                                 <p>{member.firstName} {member.lastName}</p>
                             </div>

@@ -40,7 +40,7 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
         id = kwargs.get("id")
         user = info.context.user
         team = user.team
-        events = models.Event.objects.filter(team=team)
+        events = models.Event.objects.filter(team=team).order_by('date')
 
         if id is not None:
             if id not in [event.id for event in events]:

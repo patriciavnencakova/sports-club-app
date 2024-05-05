@@ -1,5 +1,6 @@
 import graphene
 from graphql import GraphQLError
+from graphql_auth.decorators import login_required
 
 from ..types import VoteType
 from ...models import Vote, Account
@@ -13,8 +14,14 @@ class VoteMutation(graphene.Mutation):
 
     vote = graphene.Field(VoteType, required=True)
 
-    @staticmethod
-    def mutate(root, info, event_id, response, comment=None):
+    # TODO: Check how to get params in the mutate header and not from kwargs
+    @classmethod
+    @login_required
+    def mutate(cls, root, info, **kwargs):
+        event_id = kwargs.get("event_id")
+        response = kwargs.get("response")
+        comment = kwargs.get("comment")
+
         user = info.context.user
         role = Account.objects.get(email=user.email).role
         if role.description == 'tréner':

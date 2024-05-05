@@ -45,7 +45,8 @@ query voteByEventId($eventId: Int!){
       firstName
       lastName
     }
-    event{
+    event {
+      id
       date
       type{
         description
@@ -171,12 +172,13 @@ export default function Event() {
             ) : (
                 editEvent ? (
                     <EventForm
-                        eventId={eventId}
                         event={event}
                         eventTypes={eventTypes}
+                        setShowForm={setEditEvent}
+                        eventsRefetch={null}
                     />
                 ) : (
-                    <div className="max-w-sm mx-auto">
+                    <div className="flex justify-center max-w-sm mx-auto">
                         <button
                             type="button"
                             onClick={toggleEditEvent}
