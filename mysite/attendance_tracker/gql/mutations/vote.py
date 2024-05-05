@@ -16,8 +16,7 @@ class VoteMutation(graphene.Mutation):
         try:
             vote = Vote.objects.get(member_id=info.context.user.id, event_id=event_id)
             vote.response = response
-            if comment:
-                vote.comment = comment
+            vote.comment = comment
             vote.save()
         except Vote.DoesNotExist:
             vote = Vote.objects.create(
