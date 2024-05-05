@@ -5,7 +5,7 @@ import NavBar from "../components/navBar";
 import EventDetail from "../components/eventDetail";
 
 const EVENTS_QUERY = gql`
-{
+query getEvents {
   events {
     __typename
     id
@@ -48,12 +48,12 @@ export default function Events() {
             <h2 className="mb-2 text-lg font-semibold text-gray-900 dark:text-white max-w-sm mx-auto">Zoznam udalostí tvojho tímu:</h2>
             {data.events.map((event) => (
                 <div key={event.id}>
-                    <Link to={`/events/${event.id}`}>
+                    {/*<Link to={`/events/${event.id}`}>*/}
                         <EventDetail
                             event={event}
                             showMembers={false}
                         />
-                    </Link>
+                    {/*</Link>*/}
                     <br/>
                 </div>
             ))}

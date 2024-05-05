@@ -1,4 +1,5 @@
 import graphene
+from django.db.models import Subquery
 from graphene import relay, ObjectType
 from graphene_django import DjangoObjectType
 
@@ -11,7 +12,7 @@ class MemberType(DjangoObjectType):
         fields = "__all__"
 
 
-class EventType(DjangoObjectType):
+class EventtType(DjangoObjectType):
     coming = graphene.List(MemberType, required=True)
     not_coming = graphene.List(MemberType, required=True)
     not_responded = graphene.List(MemberType, required=True)
@@ -30,7 +31,9 @@ class EventType(DjangoObjectType):
         team = self.team
         total_members = models.Member.objects.filter(team=team)
         responded_members = models.Member.objects.filter(vote__event_id=self.id).distinct()
-        return total_members.exclude(pk__in=responded_members)
+        coaches = models.Account.objects.filter(role__description="tréner").values('email')
+        coach_members = models.Member.objects.filter(email__in=Subquery(coaches))
+        return total_members.exclude(pk__in=responded_members).exclude(pk__in=coach_members)
 
 
 class EventTypeType(DjangoObjectType):
@@ -49,6 +52,13 @@ class VoteType(DjangoObjectType):
     class Meta:
         model = models.Vote
         fields = "__all__"
+
+
+class RoleType(DjangoObjectType):
+    class Meta:
+        model = models.Role
+        fields = "__all__"
+
 
 
 # class EventVotesType(ObjectType):

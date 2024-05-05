@@ -4,12 +4,13 @@ from graphql_auth.queries import UserQuery, MeQuery
 from graphql_auth import mutations
 from graphql_auth.decorators import login_required
 
+from .mutations.edit_event import EditEventMutation
 from .mutations.vote import VoteMutation
 
 # TODO: Fix relative models.XXX
 from .. import models
 from .mutations.auth import RegistrationMutation
-from .types import EventType, VoteType
+from .types import EventtType, VoteType, RoleType, EventTypeType
 
 
 class AuthMutation(graphene.ObjectType):
@@ -24,8 +25,10 @@ class AuthMutation(graphene.ObjectType):
 
 class Query(UserQuery, MeQuery, graphene.ObjectType):
     # members = graphene.List(MemberType)
-    events = graphene.List(EventType, id=graphene.Int())
+    events = graphene.List(EventtType, id=graphene.Int())
     vote = graphene.Field(VoteType, event_id=graphene.NonNull(graphene.Int))
+    role = graphene.Field(RoleType)
+    event_types = graphene.List(EventTypeType)
     # event_votes = graphene.Field(EventVotesType, id=graphene.NonNull(graphene.Int))
 
     # def resolve_members(root, info):
@@ -53,6 +56,18 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
         user = info.context.user
         return models.Vote.objects.filter(member=user, event_id=event_id).last()
 
+    @classmethod
+    @login_required
+    def resolve_role(cls, root, info, **kwargs):
+        user = info.context.user
+        return models.Account.objects.get(email=user.email).role
+
+    @classmethod
+    @login_required
+    def resolve_event_types(cls, root, info, **kwargs):
+        return models.EventType.objects.all()
+
+
     # @classmethod
     # @login_required
     # def resolve_event_votes(cls, root, info, **kwargs):
@@ -78,6 +93,7 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
 
 class Mutation(AuthMutation, graphene.ObjectType):
     vote = VoteMutation.Field()
+    edit_event = EditEventMutation.Field()
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)

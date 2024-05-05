@@ -1,113 +1,113 @@
 // EventForm.jsx
 
 import React, {useState} from "react";
+import EventDetail from "./eventDetail";
+import {gql, useMutation} from "@apollo/client";
 
-export default function EventForm({eventId, createVote, voteRefetch, eventRefetch, setShowForm}) {
-    const [attendance, setAttendance] = useState(true);
-    const [comment, setComment] = useState("");
+const EDIT_EVENT = gql`
+mutation edit_event($eventId: ID!, $type: String!, $date: Date!, $location: String!) {
+  editEvent(eventId: $eventId, type: $type, date: $date, location: $location) {
+    event {
+      id
+      date
+      location
+      team {
+        name
+      }
+    }
+  }
+}
+`;
 
-    const handleAttendanceChange = (e) => {
-        const value = e.target.value === '1';
-        setAttendance(value);
-    };
+export default function EventForm({eventId, event, eventTypes}) {
+    const [selectedEventType, setSelectedEventType] = useState(event.type.description);
+    const [editEvent] = useMutation(EDIT_EVENT)
 
-    const handleCommentChange = (e) => {
-        setComment(e.target.value);
+    const handleEventTypeChange = (e) => {
+        setSelectedEventType(e.target.value);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const formData = new FormData(e.target);
 
-        const variables = {
-            eventId: eventId,
-            response: attendance,
-            comment: comment
-        };
+        const eventType = formData.get("eventType");
+        const date = formData.get("date")
+        const location = formData.get("location")
 
         try {
-            const {data} = await createVote({variables});
-            console.log('Vote created:', data);
-            setAttendance(true);
-            setComment("");
-
-            await voteRefetch();
-            await eventRefetch();
-            setShowForm(false);
-        } catch (err) {
-            console.error('Error creating vote:', err);
+            await editEvent({
+                variables: {
+                    eventId: eventId,
+                    type: eventType,
+                    date: date,
+                    location: location,
+                },
+            });
+        } catch (e) {
+            // TODO: spravit tu nieco? https://stackoverflow.com/questions/59465864/handling-errors-with-react-apollo-usemutation-hook
         }
 
-        console.log('Form data:', variables);
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <div className="mb-8">
-                <div className="flex items-center mb-4 max-w-sm mx-auto">
-                    <input
-                        id="pridem-radio"
-                        type="radio"
-                        name="attendance"
-                        value="1"
-                        checked={attendance === true}
-                        onChange={handleAttendanceChange}
-                        className="w-4 h-4 text-red-600 bg-gray-100 border-gray-300 rounded focus:ring-red-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                    />
-                    <label
-                        htmlFor="pridem-radio"
-                        className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                    >
-                        Prídem
-                    </label>
-                </div>
-                <div className="flex items-center mb-4 max-w-sm mx-auto">
-                    <input
-                        id="nepridem-radio"
-                        type="radio"
-                        name="attendance"
-                        value="0"
-                        checked={attendance === false}
-                        onChange={handleAttendanceChange}
-                        className="w-4 h-4 text-red-600 bg-gray-100 border-gray-300 rounded focus:ring-red-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                    />
-                    <label
-                        htmlFor="nepridem-radio"
-                        className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                    >
-                        Neprídem
-                    </label>
-                </div>
-                {attendance === false && (
-                    <div className="mb-8">
-                        <div className="max-w-sm mx-auto">
-                            <div className="mb-5">
-                                <label
-                                    htmlFor="large-input"
-                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                >
-                                    Dôvod neprítomnosti:
-                                </label>
-                                <input
-                                    type="text"
-                                    id="comment"
-                                    name="comment"
-                                    className="block w-full p-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-base focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                    onChange={handleCommentChange}
-                                    required
-                                />
-                            </div>
-                        </div>
-                    </div>
-                )}
-                <div className="max-w-sm mx-auto">
-                    <button
-                        type="submit"
-                        className="w-full py-3 text-white bg-red-500 rounded-md focus:outline-none hover:bg-red-600"
-                    >
-                        Poslať
-                    </button>
-                </div>
-            </div>
+        <form
+            className="max-w-sm mx-auto"
+            onSubmit={handleSubmit}>
+                <label
+                    htmlFor="eventType"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >
+                    Čo?
+                </label>
+                <select
+                    id="eventType"
+                    name="eventType"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    defaultValue={event.type.description}
+                    onChange={handleEventTypeChange}
+                >
+                    {eventTypes.map((type) => (
+                        <option key={type.id} value={type.description}>{type.description}</option>
+                    ))}
+                </select>
+                <br/>
+                <label
+                    htmlFor="date-picker"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >
+                    Kedy?
+                </label>
+                <input
+                    type="date"
+                    id="date"
+                    name="date"
+                    defaultValue={event.date}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    required
+                />
+                <br/>
+                <label
+                    htmlFor="small-input"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >
+                    Kde?
+                </label>
+                <input
+                    type="text"
+                    id="location"
+                    name="location"
+                    defaultValue={event.location}
+                    className="block w-full p-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-base focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    required
+                />
+                <br/>
+                <button
+                    type="submit"
+                    className="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-red-600 dark:hover:bg-blue-red dark:focus:ring-red-800"
+                >
+                    Upraviť
+                </button>
         </form>
     );
 }
