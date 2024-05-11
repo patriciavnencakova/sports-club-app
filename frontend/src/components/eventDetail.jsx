@@ -1,6 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
+const formatDate = (dateString) => {
+    const [year, month, day] = dateString.split('-');
+    return `${day}.${month}.${year}`;
+};
+
 export default function EventDetail({event, showMembers}) {
     return (
         <div>
@@ -12,7 +17,7 @@ export default function EventDetail({event, showMembers}) {
                     {event.type.description}
                 </h5>
                 <p className="font-normal text-gray-700 dark:text-gray-400">
-                    Kedy? <b>{event.date}</b>
+                    Kedy? <b>{formatDate(event.date)}</b>
                 </p>
                 <p className="font-normal text-gray-700 dark:text-gray-400">
                     Kde? <b>{event.location}</b>

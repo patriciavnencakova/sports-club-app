@@ -89,7 +89,7 @@ export default function Events() {
     return (
         <div className>
             <NavBar />
-            <h2 className="mb-2 text-lg font-semibold text-gray-900 dark:text-white max-w-sm mx-auto">Zoznam udalostí tvojho tímu:</h2>
+            <h2 className="mb-2 text-lg font-semibold text-gray-900 dark:text-white max-w-sm mx-auto">Zoznam aktuálnych udalostí tvojho tímu:</h2>
             {filteredEvents.map((event) => (
                 <div key={event.id}>
                     <EventDetail
