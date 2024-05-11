@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import { useQuery, gql } from "@apollo/client";
 import {Link} from "react-router-dom";
 import NavBar from "../components/navBar";
@@ -63,6 +63,15 @@ export default function Events() {
     const { data: eventTypesData, loading: eventTypesLoading, error: eventTypesError } = useQuery(GET_EVENT_TYPES);
     const [addEvent, setAddEvent] = useState(false);
 
+    const [filteredEvents, setFilteredEvents] = useState([]);
+
+    useEffect(() => {
+        if (eventsData && eventsData.events) {
+            const filtered = eventsData.events.filter(event => event.date >= currentDate);
+            setFilteredEvents(filtered);
+        }
+    }, [eventsData]);
+
     if (eventsLoading || roleLoading || eventTypesLoading) return "Loading...";
     if (eventsError || roleError || eventTypesError) return <pre>{eventsError.message || roleError.message}</pre>
 
@@ -79,15 +88,13 @@ export default function Events() {
     return (
         <div className>
             <NavBar />
-            <h2 className="mb-2 text-lg font-semibold text-gray-900 dark:text-white max-w-sm mx-auto">Zoznam udalostí tvojho tímu:</h2>
-            {eventsData.events.map((event) => (
+            <h2 className="mb-2 text-lg font-semibold text-gray-900 dark:text-white max-w-sm mx-auto">Zoznam aktuálnych udalostí tvojho tímu:</h2>
+            {filteredEvents.map((event) => (
                 <div key={event.id}>
-                    {/*<Link to={`/events/${event.id}`}>*/}
-                        <EventDetail
-                            event={event}
-                            showMembers={false}
-                        />
-                    {/*</Link>*/}
+                    <EventDetail
+                        event={event}
+                        showMembers={false}
+                    />
                     <br/>
                 </div>
             ))}
