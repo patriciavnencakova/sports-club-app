@@ -30,8 +30,8 @@ class EventtType(DjangoObjectType):
     def resolve_not_responded(self, info):
         team = self.team
         total_members = models.Member.objects.filter(team=team)
-        responded_members = models.Member.objects.filter(vote__event_id=self.id).distinct()
-        coaches = models.Account.objects.filter(role__description="tréner").values('email')
+        responded_members = models.Member.objects.filter(vote__event_id=self.id, team=team).distinct()
+        coaches = models.Account.objects.filter(role__description="tréner", team=team).values('email')
         coach_members = models.Member.objects.filter(email__in=Subquery(coaches))
         return total_members.exclude(pk__in=responded_members).exclude(pk__in=coach_members)
 
@@ -57,6 +57,12 @@ class VoteType(DjangoObjectType):
 class RoleType(DjangoObjectType):
     class Meta:
         model = models.Role
+        fields = "__all__"
+
+
+class AccountType(DjangoObjectType):
+    class Meta:
+        model = models.Account
         fields = "__all__"
 
 

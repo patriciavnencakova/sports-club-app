@@ -28,6 +28,7 @@ class Account(models.Model):
     is_registered = models.BooleanField(default=False)
     role = models.ForeignKey(Role, on_delete=models.CASCADE)
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
+    # jersey_number = models.IntegerField(null=True)
 
     def __str__(self):
         return self.email
@@ -36,6 +37,7 @@ class Account(models.Model):
 class Member(AbstractUser):
     team = models.ForeignKey(Team, on_delete=models.CASCADE, null=True)
     birth = models.DateField(null=True)
+    # mobile = models.CharField(max_length=20, null=True)
 
     class Meta:
         verbose_name = "member"

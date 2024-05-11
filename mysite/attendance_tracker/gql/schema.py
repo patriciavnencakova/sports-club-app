@@ -4,13 +4,16 @@ from graphql_auth.queries import UserQuery, MeQuery
 from graphql_auth import mutations
 from graphql_auth.decorators import login_required
 
+from django.db.models import Subquery
+
+from .mutations.add_account import AddAccountMutation
 from .mutations.edit_event import EditEventMutation
 from .mutations.vote import VoteMutation
 
 # TODO: Fix relative models.XXX
 from .. import models
 from .mutations.auth import RegistrationMutation
-from .types import EventtType, VoteType, RoleType, EventTypeType
+from .types import EventtType, VoteType, RoleType, EventTypeType, MemberType, AccountType
 
 
 class AuthMutation(graphene.ObjectType):
@@ -24,15 +27,15 @@ class AuthMutation(graphene.ObjectType):
 
 
 class Query(UserQuery, MeQuery, graphene.ObjectType):
-    # members = graphene.List(MemberType)
     events = graphene.List(EventtType, id=graphene.Int())
     vote = graphene.Field(VoteType, event_id=graphene.NonNull(graphene.Int))
     role = graphene.Field(RoleType)
     event_types = graphene.List(EventTypeType)
+    players = graphene.List(MemberType)
+    coaches = graphene.List(MemberType)
+    not_registered = graphene.List(AccountType)
+    role_types = graphene.List(RoleType)
     # event_votes = graphene.Field(EventVotesType, id=graphene.NonNull(graphene.Int))
-
-    # def resolve_members(root, info):
-    #     return models.Member.objects.all()
 
     @classmethod
     @login_required
@@ -67,6 +70,31 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
     def resolve_event_types(cls, root, info, **kwargs):
         return models.EventType.objects.all()
 
+    @classmethod
+    @login_required
+    def resolve_players(cls, root, info, **kwargs):
+        user = info.context.user
+        players = models.Account.objects.filter(role__description="hráč", team=user.team).values('email')
+        return models.Member.objects.filter(email__in=Subquery(players))
+
+    @classmethod
+    @login_required
+    def resolve_coaches(cls, root, info, **kwargs):
+        user = info.context.user
+        coaches = models.Account.objects.filter(role__description="tréner", team=user.team).values('email')
+        return models.Member.objects.filter(email__in=Subquery(coaches))
+
+    @classmethod
+    @login_required
+    def resolve_not_registered(cls, root, info, **kwargs):
+        user = info.context.user
+        return models.Account.objects.filter(team=user.team, is_registered=False)
+
+    @classmethod
+    @login_required
+    def resolve_role_types(cls, root, info, **kwargs):
+        return models.Role.objects.all()
+
 
     # @classmethod
     # @login_required
@@ -94,6 +122,7 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
 class Mutation(AuthMutation, graphene.ObjectType):
     vote = VoteMutation.Field()
     edit_event = EditEventMutation.Field()
+    add_account = AddAccountMutation.Field()
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)
