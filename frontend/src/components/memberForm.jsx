@@ -49,6 +49,10 @@ export default function MemberForm({roleTypes, setShowForm, notRegRefetch}) {
         setSelectedRoleType(e.target.value);
     };
 
+    const handleCancelButton = (e) => {
+        setShowForm(false);
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         const formData = new FormData(e.target);
@@ -116,9 +120,16 @@ export default function MemberForm({roleTypes, setShowForm, notRegRefetch}) {
                 <div className="flex justify-center">
                     <button
                         type="submit"
-                        className="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-red-600 dark:hover:bg-blue-red dark:focus:ring-red-800"
+                        className="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-red-800"
                     >
-                        Poslať
+                        Pridať
+                    </button>
+                    <button
+                        type="button"
+                        className="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-red-800"
+                        onClick={() => setShowForm(false)}
+                    >
+                        Zrušiť
                     </button>
                 </div>
             </form>
