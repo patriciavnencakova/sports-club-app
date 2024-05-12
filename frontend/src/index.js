@@ -15,6 +15,7 @@ import Homepage from "./routes/homepage";
 import {getJwtToken, getRefreshToken, setJwtToken, setRefreshToken} from "./utils/auth";
 import Event from "./routes/event";
 import {onError} from "@apollo/client/link/error";
+import Member from "./routes/member";
 
 const graphqlUri = process.env.REACT_APP_GRAPHQL_URI || "http://127.0.0.1:8000/graphql";
 
@@ -113,6 +114,10 @@ const router = createBrowserRouter([
     {
         path: "members",
         element: <Members />,
+    },
+    {
+        path: "members/:id",
+        element: <Member />,
     },
     {
         path: "events",

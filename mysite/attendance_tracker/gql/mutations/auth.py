@@ -2,9 +2,10 @@ import graphene
 from django.core.exceptions import ObjectDoesNotExist
 from graphql import GraphQLError
 from graphql_auth import mutations
+from datetime import date
 
 from ..types import MemberType
-from ...models import Account, Member
+from ...models import Account, Member, MembershipFee
 
 
 class RegistrationMutation(mutations.Register):
@@ -41,4 +42,20 @@ class RegistrationMutation(mutations.Register):
         member.save()
         account.is_registered = True
         account.save()
+
+        if account.role.description == 'hráč':
+            membership_fee = MembershipFee.objects.create(
+                member=member,
+                date=date.today(),
+            )
+            membership_fee.save()
+        else:
+            membership_fee = MembershipFee.objects.create(
+                member=member,
+                has_paid=True,
+                date=date.today(),
+            )
+            membership_fee.save()
+
+
         return RegistrationMutation(member=member)

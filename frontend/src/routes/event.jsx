@@ -166,9 +166,7 @@ export default function Event() {
     return (
         <div>
             <div className="mb-8">
-                <NavBar
-                    role={role}
-                />
+                <NavBar/>
                 <EventDetail
                     event={event}
                     showMembers={true}

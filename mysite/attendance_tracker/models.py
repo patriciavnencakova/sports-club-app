@@ -69,6 +69,9 @@ class MembershipFee(models.Model):
     has_paid = models.BooleanField(default=False)
     date = models.DateField()
 
+    def __str__(self):
+        return f"{self.member.email}"
+
 
 class Vote(models.Model):
     member = models.ForeignKey(Member, on_delete=models.CASCADE)

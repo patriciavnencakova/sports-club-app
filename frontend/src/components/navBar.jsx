@@ -4,21 +4,22 @@ import {gql, useQuery} from "@apollo/client";
 
 const GET_LOGGED_USER = gql`
 query getLoggedUser{
-    me {
-        firstName
-        lastName
+    loggedUser {
+      id
+      firstName
+      lastName
     }
 }
 `;
 
-export default function NavBar({role}) {
+export default function NavBar() {
     const navigate = useNavigate();
     const {data: loggedData, loading: loggedLoading, error: loggedError} = useQuery(GET_LOGGED_USER);
 
     if (loggedLoading) return "Loading...";
     if (loggedError) return <pre>{loggedError.message}</pre>;
 
-    const loggedUser = loggedData.me ? loggedData.me : null;
+    const logged = loggedData.loggedUser ? loggedData.loggedUser : null;
 
     const handleEventsPage = async (e) => {
         e.preventDefault();
@@ -28,6 +29,11 @@ export default function NavBar({role}) {
     const handleMembersPage = async (e) => {
         e.preventDefault();
         navigate("/members/");
+    }
+
+    const handleProfile = async (e) => {
+        e.preventDefault();
+        navigate(`/members/${logged.id}`);
     }
 
     const handleLogout = async (e) => {
@@ -53,7 +59,7 @@ export default function NavBar({role}) {
                     </li>
                     <li>
                         <a href="#"
-                            // onClick={handleLogout}
+                            onClick={handleProfile}
                            className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-red-700 md:p-0 dark:text-white md:dark:hover:text-red-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"> Profil</a>
                     </li>
                     <li>
@@ -61,7 +67,7 @@ export default function NavBar({role}) {
                            onClick={handleLogout}
                            className="block py-2 px-3 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-red-700 md:p-0 dark:text-white md:dark:hover:text-red-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">
                             Odhlásiť sa <span
-                            className="text-gray-500">({loggedUser.firstName} {loggedUser.lastName})</span>
+                            className="text-gray-500">({logged.firstName} {logged.lastName})</span>
                         </a>
                     </li>
                 </ul>

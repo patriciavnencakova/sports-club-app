@@ -13,12 +13,11 @@ from .mutations.vote import VoteMutation
 # TODO: Fix relative models.XXX
 from .. import models
 from .mutations.auth import RegistrationMutation
-from .types import EventtType, VoteType, RoleType, EventTypeType, MemberType, AccountType
+from .types import EventtType, VoteType, RoleType, EventTypeType, MemberType, AccountType, MembershipFeeType
 
 
 class AuthMutation(graphene.ObjectType):
     registration = RegistrationMutation.Field()
-    # register = mutations.Register.Field()
     verify_account = mutations.VerifyAccount.Field()
     token_auth = mutations.ObtainJSONWebToken.Field()
     verify_token = mutations.VerifyToken.Field()
@@ -29,14 +28,16 @@ class AuthMutation(graphene.ObjectType):
 class Query(UserQuery, MeQuery, graphene.ObjectType):
     events = graphene.List(EventtType, id=graphene.Int())
     vote = graphene.Field(VoteType, event_id=graphene.NonNull(graphene.Int))
-    role = graphene.Field(RoleType)
+    role = graphene.Field(RoleType, id=graphene.Int())
     event_types = graphene.List(EventTypeType)
     players = graphene.List(MemberType)
     coaches = graphene.List(MemberType)
     not_registered = graphene.List(AccountType)
     role_types = graphene.List(RoleType)
     reasons = graphene.List(VoteType, event_id=graphene.NonNull(graphene.Int))
-    # event_votes = graphene.Field(EventVotesType, id=graphene.NonNull(graphene.Int))
+    fee = graphene.Field(MembershipFeeType)
+    logged_user = graphene.Field(MemberType)
+    member = graphene.Field(MemberType, id=graphene.NonNull(graphene.Int))
 
     @classmethod
     @login_required
@@ -64,6 +65,10 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
     @login_required
     def resolve_role(cls, root, info, **kwargs):
         user = info.context.user
+        id = kwargs.get("id")
+        if id is not None:
+            email = models.Member.objects.get(id=id).email
+            return models.Account.objects.get(email=email).role
         return models.Account.objects.get(email=user.email).role
 
     @classmethod
@@ -102,27 +107,28 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
         id = kwargs.get("event_id")
         return models.Vote.objects.filter(response=False, event_id=id)
 
-    # @classmethod
-    # @login_required
-    # def resolve_event_votes(cls, root, info, **kwargs):
-    #     id = kwargs.get("id")
-    #     user = info.context.user
-    #     event = models.Event.objects.get(id=id)
-    #     team = models.Team.objects.get(id=event.team_id)
-    #
-    #     if user.team != team:
-    #         raise GraphQLError("Nemáš právo.")
-    #
-    #     coming = models.Vote.objects.filter(event_id=id, response=True).count()
-    #     not_coming = models.Vote.objects.filter(event_id=id, response=False).count()
-    #     question = models.Member.objects.all().filter(team=team).count() - coming - not_coming
-    #
-    #     # TODO: Why IDE suggests that arguments are unexpected?
-    #     return EventVotesType(
-    #         coming=coming,
-    #         not_coming=not_coming,
-    #         question=question
-    #     )
+    @classmethod
+    @login_required
+    def resolve_fee(cls, root, info, **kwargs):
+        user = info.context.user
+        return models.MembershipFee.objects.get(member=user)
+
+    @classmethod
+    @login_required
+    def resolve_logged_user(cls, root, info, **kwargs):
+        user = info.context.user
+        return models.Member.objects.get(email=user.email)
+
+    @classmethod
+    @login_required
+    def resolve_member(cls, root, info, **kwargs):
+        id = kwargs.get("id")
+        user = info.context.user
+        member_id = models.Member.objects.get(email=user.email).id
+        role = models.Account.objects.get(email=user.email).role.description
+        if (role == 'hráč' and id != member_id):
+            raise GraphQLError("Nemáš právo na túto akciu.")
+        return models.Member.objects.get(id=id)
 
 
 class Mutation(AuthMutation, graphene.ObjectType):

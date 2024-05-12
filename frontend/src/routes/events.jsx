@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from "react";
 import { useQuery, gql } from "@apollo/client";
-import {Link} from "react-router-dom";
 import NavBar from "../components/navBar";
 import EventDetail from "../components/eventDetail";
 import EventForm from "../components/eventForm";
@@ -83,8 +82,6 @@ export default function Events() {
     const toggleAddEvent = () => {
         setAddEvent(true);
     };
-
-    console.log(eventsData);
 
     return (
         <div className>

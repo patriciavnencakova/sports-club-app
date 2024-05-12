@@ -1,6 +1,5 @@
 import graphene
 from django.db.models import Subquery
-from graphene import relay, ObjectType
 from graphene_django import DjangoObjectType
 
 from .. import models
@@ -65,9 +64,7 @@ class AccountType(DjangoObjectType):
         model = models.Account
         fields = "__all__"
 
-
-
-# class EventVotesType(ObjectType):
-#     coming = graphene.Int(required=True)
-#     not_coming = graphene.Int(required=True)
-#     question = graphene.Int(required=True)
+class MembershipFeeType(DjangoObjectType):
+    class Meta:
+        model = models.MembershipFee
+        fields = "__all__"
