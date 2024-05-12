@@ -57,5 +57,4 @@ class RegistrationMutation(mutations.Register):
             )
             membership_fee.save()
 
-
         return RegistrationMutation(member=member)

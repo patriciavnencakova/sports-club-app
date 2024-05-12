@@ -3,6 +3,7 @@ import { useQuery, gql } from "@apollo/client";
 import NavBar from "../components/navBar";
 import EventForm from "../components/eventForm";
 import MemberForm from "../components/memberForm";
+import {Link} from "react-router-dom";
 
 const PLAYERS_QUERY = gql`
 {
@@ -89,24 +90,27 @@ export default function Members() {
                 <ul className="max-w-md divide-y divide-gray-200 dark:divide-gray-700">
                     {coachesData.coaches.map((coach) => (
                         <li key={coach.id} className="py-3 sm:py-4">
-                            <div className="flex items-center space-x-4 rtl:space-x-reverse">
-                                <div className="flex-shrink-0">
-                                    <img className="w-8 h-8 rounded-full" src="/user.png"
-                                         alt={`${coach.firstName} ${coach.lastName} image`}/>
+                            <Link
+                                to={`/members/${coach.id}`}
+                            >
+                                <div className="flex items-center space-x-4 rtl:space-x-reverse">
+                                    <div className="flex-shrink-0">
+                                        <img className="w-8 h-8 rounded-full" src="/user.png"
+                                             alt={`${coach.firstName} ${coach.lastName} image`}/>
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
+                                            {coach.firstName} {coach.lastName}
+                                        </p>
+                                        <p className="text-sm text-gray-500 truncate dark:text-gray-400">
+                                            {coach.email}
+                                        </p>
+                                        <p className="text-sm text-gray-500 truncate dark:text-gray-400">
+                                            +421 999 999 999
+                                        </p>
+                                    </div>
                                 </div>
-                                <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
-                                        {coach.firstName} {coach.lastName}
-                                    </p>
-                                    <p className="text-sm text-gray-500 truncate dark:text-gray-400">
-                                        {coach.email}
-                                    </p>
-                                    <p className="text-sm text-gray-500 truncate dark:text-gray-400">
-                                        +421 999 999 999
-                                    </p>
-                                </div>
-
-                            </div>
+                            </Link>
                         </li>
                     ))}
                 </ul>
@@ -115,27 +119,31 @@ export default function Members() {
                 <ul className="max-w-md divide-y divide-gray-200 dark:divide-gray-700">
                     {playersData.players.map((player) => (
                         <li key={player.id} className="py-3 sm:py-4">
-                            <div className="flex items-center space-x-4 rtl:space-x-reverse">
-                                <div className="flex-shrink-0">
-                                    <img className="w-8 h-8 rounded-full" src="/user.png"
-                                         alt={`${player.firstName} ${player.lastName} image`}/>
+                            <Link
+                                to={`/members/${player.id}`}
+                            >
+                                <div className="flex items-center space-x-4 rtl:space-x-reverse">
+                                    <div className="flex-shrink-0">
+                                        <img className="w-8 h-8 rounded-full" src="/user.png"
+                                             alt={`${player.firstName} ${player.lastName} image`}/>
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
+                                            {player.firstName} {player.lastName}
+                                        </p>
+                                        <p className="text-sm text-gray-500 truncate dark:text-gray-400">
+                                            {player.email}
+                                        </p>
+                                        <p className="text-sm text-gray-500 truncate dark:text-gray-400">
+                                            +421 999 999 999
+                                        </p>
+                                    </div>
+                                    <div
+                                        className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
+                                        87
+                                    </div>
                                 </div>
-                                <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
-                                        {player.firstName} {player.lastName}
-                                    </p>
-                                    <p className="text-sm text-gray-500 truncate dark:text-gray-400">
-                                        {player.email}
-                                    </p>
-                                    <p className="text-sm text-gray-500 truncate dark:text-gray-400">
-                                        +421 999 999 999
-                                    </p>
-                                </div>
-                                <div
-                                    className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-                                    87
-                                </div>
-                            </div>
+                            </Link>
                         </li>
                     ))}
                 </ul>

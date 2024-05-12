@@ -64,6 +64,7 @@ class AccountType(DjangoObjectType):
         model = models.Account
         fields = "__all__"
 
+
 class MembershipFeeType(DjangoObjectType):
     class Meta:
         model = models.MembershipFee

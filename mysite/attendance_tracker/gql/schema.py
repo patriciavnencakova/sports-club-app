@@ -8,6 +8,7 @@ from django.db.models import Subquery
 
 from .mutations.add_account import AddAccountMutation
 from .mutations.edit_event import EditEventMutation
+from .mutations.fee import FeeMutation
 from .mutations.vote import VoteMutation
 
 # TODO: Fix relative models.XXX
@@ -35,7 +36,7 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
     not_registered = graphene.List(AccountType)
     role_types = graphene.List(RoleType)
     reasons = graphene.List(VoteType, event_id=graphene.NonNull(graphene.Int))
-    fee = graphene.Field(MembershipFeeType)
+    fee = graphene.Field(MembershipFeeType, id=graphene.NonNull(graphene.Int))
     logged_user = graphene.Field(MemberType)
     member = graphene.Field(MemberType, id=graphene.NonNull(graphene.Int))
 
@@ -110,8 +111,9 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
     @classmethod
     @login_required
     def resolve_fee(cls, root, info, **kwargs):
-        user = info.context.user
-        return models.MembershipFee.objects.get(member=user)
+        id = kwargs.get("id")
+        member = models.Member.objects.get(id=id)
+        return models.MembershipFee.objects.get(member=member)
 
     @classmethod
     @login_required
@@ -126,7 +128,7 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
         user = info.context.user
         member_id = models.Member.objects.get(email=user.email).id
         role = models.Account.objects.get(email=user.email).role.description
-        if (role == 'hráč' and id != member_id):
+        if role == 'hráč' and id != member_id:
             raise GraphQLError("Nemáš právo na túto akciu.")
         return models.Member.objects.get(id=id)
 
@@ -135,6 +137,7 @@ class Mutation(AuthMutation, graphene.ObjectType):
     vote = VoteMutation.Field()
     edit_event = EditEventMutation.Field()
     add_account = AddAccountMutation.Field()
+    fee = FeeMutation.Field()
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)
