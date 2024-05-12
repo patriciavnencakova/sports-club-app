@@ -1,8 +1,24 @@
 import React from "react";
 import {useNavigate} from "react-router-dom";
+import {gql, useQuery} from "@apollo/client";
+
+const GET_LOGGED_USER = gql`
+query getLoggedUser{
+    me {
+        firstName
+        lastName
+    }
+}
+`;
 
 export default function NavBar({role}) {
     const navigate = useNavigate();
+    const {data: loggedData, loading: loggedLoading, error: loggedError} = useQuery(GET_LOGGED_USER);
+
+    if (loggedLoading) return "Loading...";
+    if (loggedError) return <pre>{loggedError.message}</pre>;
+
+    const loggedUser = loggedData.me ? loggedData.me : null;
 
     const handleEventsPage = async (e) => {
         e.preventDefault();
@@ -43,8 +59,10 @@ export default function NavBar({role}) {
                     <li>
                         <a href="#"
                            onClick={handleLogout}
-                           className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-red-700 md:p-0 dark:text-white md:dark:hover:text-red-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Odhlásiť
-                            sa</a>
+                           className="block py-2 px-3 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-red-700 md:p-0 dark:text-white md:dark:hover:text-red-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">
+                            Odhlásiť sa <span
+                            className="text-gray-500">({loggedUser.firstName} {loggedUser.lastName})</span>
+                        </a>
                     </li>
                 </ul>
             </div>
