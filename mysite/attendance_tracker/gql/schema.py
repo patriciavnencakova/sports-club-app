@@ -7,6 +7,7 @@ from graphql_auth.decorators import login_required
 from django.db.models import Subquery
 
 from .mutations.add_account import AddAccountMutation
+from .mutations.deleteM import DeleteMemberMutation
 from .mutations.edit_event import EditEventMutation
 from .mutations.fee import FeeMutation
 from .mutations.vote import VoteMutation
@@ -138,6 +139,7 @@ class Mutation(AuthMutation, graphene.ObjectType):
     edit_event = EditEventMutation.Field()
     add_account = AddAccountMutation.Field()
     fee = FeeMutation.Field()
+    delete_m = DeleteMemberMutation.Field()
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)

@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {useQuery, gql, useMutation} from "@apollo/client";
-import {Link, useParams} from "react-router-dom";
+import {Link, useParams, useNavigate} from "react-router-dom";
 import NavBar from "../components/navBar";
 
 const formatDate = (dateString) => {
@@ -69,9 +69,27 @@ const UPDATE_FEE = gql`
   }
 `;
 
+const DELETE_MEMBER = gql`
+mutation deleteM($memberId: ID!) {
+  deleteM(memberId: $memberId) {
+    member {
+      firstName
+      lastName
+      email
+    }
+  }
+}
+`;
+
 export default function Member() {
     const {id: memberId} = useParams();
+    let navigate = useNavigate();
     const [updateFee] = useMutation(UPDATE_FEE);
+    const [deleteMember] = useMutation(DELETE_MEMBER, {
+        onCompleted: () => {
+            navigate(`/members/`);
+        }
+    });
     const {data: loggedData, loading: loggedLoading, error: loggedError} = useQuery(MEMBER_BY_ID, {
         variables: {id: parseInt(memberId)}
     });
@@ -106,7 +124,7 @@ export default function Member() {
         setPaid(value);
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmitChange = async (e) => {
         e.preventDefault();
         const variables = {
             memberId: parseInt(memberId),
@@ -118,6 +136,18 @@ export default function Member() {
             await feeRefetch();
         } catch (err) {
             console.error('Error updating: ', err);
+        }
+    }
+
+    const handleSubmitDelete = async (e) => {
+        e.preventDefault();
+        const variables = {
+            memberId: parseInt(memberId),
+        };
+        try {
+            await deleteMember({variables});
+        } catch (err) {
+            console.error('Error while deletion: ', err);
         }
     }
 
@@ -171,7 +201,7 @@ export default function Member() {
                     <button
                         type="submit"
                         className="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-red-800"
-                        // onClick={() => setShowCancel(true)}
+                        onClick={handleSubmitDelete}
                     >
                         Odstrániť hráča
                     </button>
@@ -220,7 +250,7 @@ export default function Member() {
                                 <button
                                     type="submit"
                                     className="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-red-800"
-                                    onClick={handleSubmit}
+                                    onClick={handleSubmitChange}
                                 >
                                     Zmeniť
                                 </button>

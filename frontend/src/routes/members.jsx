@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import { useQuery, gql } from "@apollo/client";
 import NavBar from "../components/navBar";
 import EventForm from "../components/eventForm";
@@ -63,13 +63,18 @@ query getRoleTypes{
 `;
 
 export default function Members() {
-    const { data: playersData, loading: playersLoading, error: playersError } = useQuery(PLAYERS_QUERY);
+    const { data: playersData, loading: playersLoading, error: playersError, refetch: playersRefetch } = useQuery(PLAYERS_QUERY);
     const { data: coachesData, loading: coachesLoading, error: coachesError } = useQuery(COACHES_QUERY);
     const { data: notRegData, loading: notRegLoading, error: notRegError, refetch: notRegRefetch } = useQuery(NOT_REGISTERED_QUERY);
     const { data: roleData, loading: roleLoading, error: roleError } = useQuery(GET_ROLE);
     const [addMember, setAddMember] = useState(false);
     const { data: roleTypesData, loading: roleTypesLoading, error: roleTypesError } = useQuery(GET_ROLE_TYPES);
 
+    useEffect(() => {
+        if (playersData) {
+            playersRefetch();
+        }
+    }, [playersData, playersRefetch]);
 
     if (playersLoading || coachesLoading || roleLoading || roleTypesLoading || notRegLoading) return "Loading...";
     if (playersError || coachesError || roleError || roleTypesError || notRegError) return <pre>{playersError.message || coachesError.message || roleError.message || roleTypesError.message || notRegError.message}</pre>
