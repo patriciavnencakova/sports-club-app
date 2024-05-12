@@ -48,7 +48,6 @@ export default function Login() {
                 console.log(verifyData, verifyData.verifyToken, verifyData.verifyToken.success, verifyData.verifyToken.success === true);
 
                 if (verifyData && verifyData.verifyToken && verifyData.verifyToken.success === true) {
-                    console.log('seks');
                     navigate('/events'); // Redirect to '/events' if token verification succeeds
                 }
             } catch (error) {

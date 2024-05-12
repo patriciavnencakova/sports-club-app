@@ -35,6 +35,7 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
     coaches = graphene.List(MemberType)
     not_registered = graphene.List(AccountType)
     role_types = graphene.List(RoleType)
+    reasons = graphene.List(VoteType, event_id=graphene.NonNull(graphene.Int))
     # event_votes = graphene.Field(EventVotesType, id=graphene.NonNull(graphene.Int))
 
     @classmethod
@@ -95,6 +96,11 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
     def resolve_role_types(cls, root, info, **kwargs):
         return models.Role.objects.all()
 
+    @classmethod
+    @login_required
+    def resolve_reasons(cls, root, info, **kwargs):
+        id = kwargs.get("event_id")
+        return models.Vote.objects.filter(response=False, event_id=id)
 
     # @classmethod
     # @login_required
