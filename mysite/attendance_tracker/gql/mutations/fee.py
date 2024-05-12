@@ -2,8 +2,9 @@ import graphene
 from graphql import GraphQLError
 from graphql_auth.decorators import login_required
 
-from ..types import VoteType, MembershipFeeType
-from ...models import Vote, Account, MembershipFee
+from ..types import MembershipFeeType
+from ...models import Account, MembershipFee
+from datetime import date
 
 
 class FeeMutation(graphene.Mutation):
@@ -27,10 +28,12 @@ class FeeMutation(graphene.Mutation):
         try:
             fee = MembershipFee.objects.get(member_id=member_id)
             fee.has_paid = has_paid
+            fee.date = date.today()
             fee.save()
         except MembershipFee.DoesNotExist:
             fee = MembershipFee.objects.create(
                 member_id=member_id,
                 has_paid=has_paid,
+                date=date.today(),
             )
         return FeeMutation(fee=fee)

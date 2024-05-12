@@ -105,9 +105,6 @@ export default function Members() {
                                         <p className="text-sm text-gray-500 truncate dark:text-gray-400">
                                             {coach.email}
                                         </p>
-                                        <p className="text-sm text-gray-500 truncate dark:text-gray-400">
-                                            +421 999 999 999
-                                        </p>
                                     </div>
                                 </div>
                             </Link>
@@ -134,13 +131,6 @@ export default function Members() {
                                         <p className="text-sm text-gray-500 truncate dark:text-gray-400">
                                             {player.email}
                                         </p>
-                                        <p className="text-sm text-gray-500 truncate dark:text-gray-400">
-                                            +421 999 999 999
-                                        </p>
-                                    </div>
-                                    <div
-                                        className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-                                        87
                                     </div>
                                 </div>
                             </Link>
