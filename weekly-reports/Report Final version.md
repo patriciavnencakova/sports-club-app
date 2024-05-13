@@ -21,7 +21,7 @@
   - players and also the coach can see who is going/not going/not responded to the event
 
 ### Github tag
-[`https://github.com/patriciavnencakova/sports-club-app/releases/tag/Final_Version`](https://github.com/patriciavnencakova/sports-club-app/releases/tag/Final_Version) 
+[`https://github.com/patriciavnencakova/sports-club-app/releases/tag/Final_version2`](https://github.com/patriciavnencakova/sports-club-app/releases/tag/Final_version2) 
 
 ### Technological requirements
 
