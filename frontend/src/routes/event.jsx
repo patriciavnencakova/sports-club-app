@@ -114,8 +114,25 @@ query getReasons($eventId: Int!) {
 }
 `
 
+const DELETE_EVENT = gql`
+mutation deleteE($eventId: ID!) {
+  deleteE(eventId: $eventId) {
+    event {
+      location
+      date
+    }
+  }
+}
+`;
+
 export default function Event() {
     const [createVote] = useMutation(CREATE_VOTE);
+    let navigate = useNavigate();
+    const [deleteEvent] = useMutation(DELETE_EVENT, {
+        onCompleted: () => {
+            navigate(`/events/`);
+        }
+    });
     const {id: eventId} = useParams();
     const [showForm, setShowForm] = useState(false);
     const [editEvent, setEditEvent] = useState(false);
@@ -162,6 +179,18 @@ export default function Event() {
         setshowReasons(true)
         setEditEvent(false);
     };
+
+    const handleSubmitDelete = async (e) => {
+        e.preventDefault();
+        const variables = {
+            eventId: parseInt(eventId),
+        };
+        try {
+            await deleteEvent({variables});
+        } catch (err) {
+            console.error('Error while deletion: ', err);
+        }
+    }
 
     return (
         <div>
@@ -253,6 +282,13 @@ export default function Event() {
                                 className="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-red-800"
                             >
                                 Dôvody neprítomnosti
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleSubmitDelete}
+                                className="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-red-800"
+                            >
+                                Odstrániť {event.type.description.toLowerCase()}
                             </button>
                         </div>
                     )
