@@ -69,9 +69,14 @@ export default function Events() {
         if (eventsData && eventsData.events) {
             const filtered = eventsData.events.filter(event => event.date >= currentDate);
             setFilteredEvents(filtered);
+        }
+    }, [eventsData]);
+
+    useEffect(() => {
+        if (eventsData) {
             eventsRefetch();
         }
-    }, [eventsData, eventsRefetch()]);
+    }, [eventsData, eventsRefetch]);
 
     if (eventsLoading || roleLoading || eventTypesLoading) return "Loading...";
     if (eventsError || roleError || eventTypesError) return <pre>{eventsError.message || roleError.message}</pre>

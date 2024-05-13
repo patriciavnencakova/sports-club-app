@@ -1,5 +1,3 @@
-// EventForm.jsx
-
 import React, {useState} from "react";
 
 export default function VoteForm({eventId, createVote, voteRefetch, eventRefetch, setShowForm}) {
@@ -102,7 +100,7 @@ export default function VoteForm({eventId, createVote, voteRefetch, eventRefetch
                 <div className="max-w-sm mx-auto">
                     <button
                         type="submit"
-                        className="w-full py-3 text-white bg-red-500 rounded-md focus:outline-none hover:bg-red-600"
+                        className="w-full text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-red-800"
                     >
                         Poslať
                     </button>

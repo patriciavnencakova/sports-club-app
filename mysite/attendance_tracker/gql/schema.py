@@ -41,6 +41,9 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
     fee = graphene.Field(MembershipFeeType, id=graphene.NonNull(graphene.Int))
     logged_user = graphene.Field(MemberType)
     member = graphene.Field(MemberType, id=graphene.NonNull(graphene.Int))
+    coming = graphene.List(EventtType, id=graphene.NonNull(graphene.Int))
+    not_coming = graphene.List(EventtType, id=graphene.NonNull(graphene.Int))
+    not_responded = graphene.List(EventtType, id=graphene.NonNull(graphene.Int))
 
     @classmethod
     @login_required
@@ -133,6 +136,27 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
         if role == 'hráč' and id != member_id:
             raise GraphQLError("Nemáš právo na túto akciu.")
         return models.Member.objects.get(id=id)
+
+    @classmethod
+    @login_required
+    def resolve_coming(cls, root, info, **kwargs):
+        id = kwargs.get("id")
+        return models.Event.objects.filter(vote__member_id=id, vote__response=True)
+
+    @classmethod
+    @login_required
+    def resolve_not_coming(cls, root, info, **kwargs):
+        id = kwargs.get("id")
+        return models.Event.objects.filter(vote__member_id=id, vote__response=False)
+
+    @classmethod
+    @login_required
+    def resolve_not_responded(cls, root, info, **kwargs):
+        id = kwargs.get("id")
+        user = info.context.user
+        all_events = models.Event.objects.filter(team=user.team)
+        events = models.Event.objects.filter(vote__member_id=id)
+        return all_events.exclude(pk__in=events)
 
 
 class Mutation(AuthMutation, graphene.ObjectType):

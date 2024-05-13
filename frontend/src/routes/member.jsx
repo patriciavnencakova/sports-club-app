@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import {useQuery, gql, useMutation} from "@apollo/client";
 import {Link, useParams, useNavigate} from "react-router-dom";
 import NavBar from "../components/navBar";
+import EventDetail from "../components/eventDetail";
 
 const formatDate = (dateString) => {
     const [year, month, day] = dateString.split('-');
@@ -81,6 +82,45 @@ mutation deleteM($memberId: ID!) {
 }
 `;
 
+const COMING = gql`
+query coming($id: Int!) {
+  coming(id: $id) {
+    id
+    location
+    date
+    type {
+      description
+    }
+  }
+}
+`;
+
+const NOT_COMING = gql`
+query notComing($id: Int!) {
+  notComing(id: $id) {
+    id
+    location
+    date
+    type {
+      description
+    }
+  }
+}
+`;
+
+const NOT_RESPONDED = gql`
+query notResponded($id: Int!) {
+  notResponded(id: $id) {
+    id
+    location
+    date
+    type {
+      description
+    }
+  }
+}
+`;
+
 export default function Member() {
     const {id: memberId} = useParams();
     let navigate = useNavigate();
@@ -100,6 +140,17 @@ export default function Member() {
     const {data: feeData, loading: feeLoading, error: feeError, refetch:feeRefetch} = useQuery(GET_FEE, {
         variables: {id: parseInt(memberId)}
     });
+    const {data: comingData, loading: comingLoading, error: comingError, refetch:comingRefetch} = useQuery(COMING, {
+        variables: {id: parseInt(memberId)}
+    });
+
+    const {data: notComingData, loading: notComingLoading, error: notComingError, refetch:notComingRefetch} = useQuery(NOT_COMING, {
+        variables: {id: parseInt(memberId)}
+    });
+
+    const {data: notRespondedData, loading: notRespondedLoading, error: notRespondedError, refetch:notRespondedRefetch} = useQuery(NOT_RESPONDED, {
+        variables: {id: parseInt(memberId)}
+    });
 
     const [showFee, setShowFee] = useState(false);
     const [paid, setPaid] = useState(true);
@@ -110,14 +161,35 @@ export default function Member() {
         }
     }, [feeData]);
 
-    if (loggedLoading || roleLoading || feeLoading || roleLogLoading) return "Loading...";
-    if (loggedError || roleError || feeError || roleLogError)
-        return <pre>{loggedError.message} || {roleError.message} || {feeError.message} || {roleLogError.message}</pre>;
+    useEffect(() => {
+        if (comingData && comingData.coming) {
+            comingRefetch();
+        }
+    }, [comingData]);
+
+    useEffect(() => {
+        if (notComingData && notComingData.notComing) {
+            notComingRefetch();
+        }
+    }, [notComingData]);
+
+    useEffect(() => {
+        if (notRespondedData && notRespondedData.notResponded) {
+            notRespondedRefetch();
+        }
+    }, [notRespondedData]);
+
+    if (notRespondedLoading || notComingLoading || comingLoading || loggedLoading || roleLoading || feeLoading || roleLogLoading) return "Loading...";
+    if (notRespondedError || notComingError || comingError || loggedError || roleError || feeError || roleLogError)
+        return <pre>{notRespondedError.message} || {notComingError.message} || {comingError.message} || {loggedError.message} || {roleError.message} || {feeError.message} || {roleLogError.message}</pre>;
 
     const user = loggedData.member ? loggedData.member : null;
     const roleId = roleData.role ? roleData.role.description : null;
     const roleLog = roleLogData.role ? roleLogData.role.description : null;
     const fee = feeData.fee ? feeData.fee : null;
+    const coming = comingData.coming && comingData.coming.length > 0 ? comingData.coming : [];
+    const notComing = notComingData.notComing && notComingData.notComing.length > 0 ? notComingData.notComing : [];
+    const notResponded = notRespondedData.notResponded && notRespondedData.notResponded.length > 0 ? notRespondedData.notResponded : [];
 
     const handlePaidChange = (e) => {
         const value = e.target.value === '1';
@@ -190,7 +262,7 @@ export default function Member() {
                 </Link>
             </div>
             {!showFee && roleLog === 'tréner' && roleId === 'hráč' && (
-                <div className="flex justify-center">
+                <div className="flex justify-center" style={{ marginBottom: "30px" }}>
                     <button
                         type="button"
                         className="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-red-800"
@@ -265,6 +337,47 @@ export default function Member() {
                         </div>
                     </form>
                 </div>
+            )}
+            {roleId === 'hráč' && (
+            <div className="mb-8 max-w-4xl mx-auto">
+                <div style={{display: 'flex', alignItems: 'stretch', justifyContent: 'center'}}>
+                    <div style={{flex: '1', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+                        <img src="/check.png" alt="Check" style={{width: '20px', height: 'auto'}}/>
+                        <p>{coming.length}</p>
+                        <ul className="list-disc">
+                            {coming.map((event) => (
+                                <div key={event.id}>
+                                    <li>{event.type.description} ({event.location}, {formatDate(event.date)})</li>
+                                </div>
+                            ))}
+                        </ul>
+                    </div>
+                    <div style={{flex: '1', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+                        <img src="/false.png" alt="X" style={{width: '20px', height: 'auto'}}/>
+                        <p>{notComing.length}</p>
+                        <br/>
+                        <ul className="list-disc">
+                            {notComing.map((event) => (
+                                <div key={event.id}>
+                                    <li>{event.type.description} ({event.location}, {formatDate(event.date)})</li>
+                                </div>
+                            ))}
+                        </ul>
+                    </div>
+                    <div style={{flex: '1', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+                        <img src="/question.png" alt="Question" style={{width: '20px', height: 'auto'}}/>
+                        <p>{notResponded.length}</p>
+                        <br/>
+                        <ul className="list-disc">
+                            {notResponded.map((event) => (
+                                <div key={event.id}>
+                                    <li>{event.type.description} ({event.location}, {formatDate(event.date)})</li>
+                                </div>
+                            ))}
+                        </ul>
+                    </div>
+                </div>
+            </div>
             )}
         </div>
     );
